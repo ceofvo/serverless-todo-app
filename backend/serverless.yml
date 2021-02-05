@@ -1,22 +1,22 @@
-service:
-  name: serverless-todo-app
+service: serverless-todo-app
 
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs12.x
 
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
 
   environment:
     TODOS_TABLE: todos-${self:provider.stage}
-    TODOS_TABLE_INDEX: todos-index-${self:provider.environment.TODOS_TABLE}
-    TODOS_S3_BUCKET: serverless-todos-attachments-${self:provider.stage}-01
+    TODOS_TABLE_INDEX: UserIdIndex
+    TODOS_S3_BUCKET: serverless-todos-attachments-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
     JWKS_URL: 'https://fvo.auth0.com/.well-known/jwks.json'
 
@@ -40,6 +40,10 @@ functions:
         Action:
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_TABLE_INDEX}
 
   # TODO: Configure this function
   CreateTodo:
@@ -121,7 +125,7 @@ resources:
         ResponseParameters:
           gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
           gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST,DELETE,PUT,PATCH'"
         ResponseType: DEFAULT_4XX
         RestApiId:
           Ref: ApiGatewayRestApi
@@ -135,7 +139,7 @@ resources:
         ValidateRequestBody: true
         ValidateRequestParameters: false
 
-    TodosDynamoDBTable:
+    TodosTable:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
@@ -150,7 +154,7 @@ resources:
             KeyType: HASH
           - AttributeName: todoId
             KeyType: RANGE
-        GlobalSecondaryIndexes:
+        LocalSecondaryIndexes:
           - IndexName: ${self:provider.environment.TODOS_TABLE_INDEX}
             KeySchema:
             - AttributeName: userId
