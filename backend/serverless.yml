@@ -4,7 +4,7 @@ plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-reqvalidator-plugin
-  - serverless-aws-documentation
+  #- serverless-aws-documentation
 
 provider:
   name: aws
@@ -16,7 +16,7 @@ provider:
   environment:
     TODOS_TABLE: todos-${self:provider.stage}
     TODOS_TABLE_INDEX: UserIdIndex
-    TODOS_S3_BUCKET: serverless-todos-attachments-${self:provider.stage}
+    TODOS_S3_BUCKET: serverless-todos-attachments-ceofvo-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
     JWKS_URL: 'https://fvo.auth0.com/.well-known/jwks.json'
 
