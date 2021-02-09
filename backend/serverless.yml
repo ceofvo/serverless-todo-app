@@ -69,12 +69,9 @@ functions:
           path: todos
           cors: true
           authorizer: Auth
-          reqValidatorName: RequestBodyValidator
-          documentation:
-            summary: Create a new todo
-            description: Create a new todo
-            requestModels:
-              'application/json': CreateTodoRequest
+          request:
+            schema:
+              application/json: ${file(src/models/create-todo-request.json)}
     iamRoleStatementsName: Put-Into-DynamoDB-Todos-Table
     iamRoleStatements:
       - Effect: Allow
@@ -91,12 +88,9 @@ functions:
           path: todos/{todoId}
           cors: true
           authorizer: Auth
-          reqValidatorName: RequestBodyValidator
-          documentation:
-            summary: update an existing todo
-            description: update an existing todo
-            requestModels:
-              'application/json': UpdateTodoRequest
+          request:
+            schema:
+              application/json: ${file(src/models/update-todo-request.json)}
     iamRoleStatementsName: Update-DynamoDB-Todos-Table
     iamRoleStatements:
       - Effect: Allow

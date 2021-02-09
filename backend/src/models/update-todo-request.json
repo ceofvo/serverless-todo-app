@@ -18,6 +18,11 @@
       "dueDate",
       "done"
     ],
-    
-    "additionalProperties": false
+    "additionalProperties": {
+      "properties":{
+          "attachmentUrl":{
+              "type":"string"
+          }
+      }
+    }
   }

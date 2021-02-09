@@ -13,6 +13,11 @@
     "required": [
       "name",
       "dueDate"  ],
-  
-    "additionalProperties": false
+    "additionalProperties": {
+      "properties":{
+          "attachmentUrl":{
+              "type":"string"
+          }
+      }
+    }
   }
